@@ -11,10 +11,8 @@ p = inflect.engine()
 # blacklist -> comma seperated list of strings e.g. "apple,banna,orange"
 
 APP_ID_SEARCH = "08c67c26"
-APP_ID_NUTRA = "88cc2994"
 APP_KEY_SEARCH = "d22fafacab5449e1405a9937b7a0a7ba"
-APP_KEY_NUTRA = "1efc24b560a4cbf7dcd13aa43e88f85b"
-
+allergies = []
 
 def find_health_lable(l):
     if l == "vegetarian":
@@ -45,8 +43,10 @@ def confidence(res):
             conf[i] = "Very Likely"
     return conf
 
-@app.route('/<foodname>/<blacklist>')
-def f(foodname, blacklist):
+
+@app.route('/<foodname>')
+def f(foodname):
+    blacklist = allergies[-1]
     bad = blacklist.split(",")
     for x in bad:  # parse blacklist
         x = x.lower()
@@ -126,5 +126,21 @@ def f(foodname, blacklist):
     conf2.update(conf1)
     return str(conf2)
 
-if(__name__ == "__main__"):
+
+@app.route('/updRestrictions/<string:newStr>')
+def updRestrictions(newStr):
+    print(newStr)
+    allergies.append(newStr)
+    return "allergies is now "+newStr
+
+
+@app.route('/queryRestrictions')
+def queryRestrictions():
+    print("hello")
+    print("returning "+allergies[-1])
+    print(allergies[-1])
+    return allergies[-1]
+
+
+if __name__ == "__main__" :
     app.run(host='0.0.0.0', port = 42068, debug = True)
